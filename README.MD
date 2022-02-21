@@ -1,6 +1,6 @@
 # Projet IA Android
 
-![start image](https://github.com/hoaraut35/P9/blob/main/blob/mockup.JPG)
+![start image](https://github.com/hoaraut35/ia/blob/main/blob/capture.JPG)
 
 
 This is a demo project to extract a barcode
