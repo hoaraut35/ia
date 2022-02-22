@@ -90,29 +90,46 @@ class MainActivity : AppCompatActivity() {
 
         //setup image ...
         val photo = BitmapFactory.decodeResource(resources, R.drawable.photo)
+        val photoTerminator = BitmapFactory.decodeResource(resources, R.drawable.terminator)
+
+
         val imageViewPhoto = findViewById<ImageView>(R.id.imageViewPhoto)
+        val imageViewPhotoTerminator = findViewById<ImageView>(R.id.imageViewPhoto2)
+
         imageViewPhoto.setImageResource(R.drawable.photo)
+        imageViewPhotoTerminator.setImageResource(R.drawable.terminator)
+
 
         //setup inputImage ...
-        val photo2 = InputImage.fromBitmap(photo, 0)
+        val photoOfMe = InputImage.fromBitmap(photo, 0)
+        val photoOfTerminator = InputImage.fromBitmap(photoTerminator, 0)
 
         val detector = FaceDetection.getClient(highAccuracyOpts)
-
 
         //setup the button ...
         val buttonPhoto = findViewById<Button>(R.id.btnphoto)
 
-        buttonPhoto.setOnClickListener {
-            val result = detector.process(photo2)
-                .addOnSuccessListener { faces ->
-                    Toast.makeText(this, " Visage trouvé ", Toast.LENGTH_SHORT)
-                        .show()
+        val textViewPhoto = findViewById<TextView>(R.id.textphoto)
+        val textViewPhoto2 = findViewById<TextView>(R.id.textphoto2)
 
+        buttonPhoto.setOnClickListener {
+
+            val result2 = detector.process(photoOfTerminator)
+
+                .addOnSuccessListener{faces ->
 
                     for (face in faces) {
                         val bounds = face.boundingBox
                         val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
                         val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
+
+                        textViewPhoto2.text =""
+                        textViewPhoto2.append("Emplacement : " +  bounds.toString() + "\n")
+                        textViewPhoto2.append("Rotation tête horizontale X : "+ rotY.toString() + "°" + "\n" )
+                        textViewPhoto2.append("Inclinaison tête axe Z : "+ rotZ.toString() + "°" + "\n" )
+
+
+
 
                         // If landmark detection was enabled (mouth, ears, eyes, cheeks, and
                         // nose available):
@@ -128,7 +145,54 @@ class MainActivity : AppCompatActivity() {
                         // If classification was enabled:
                         if (face.smilingProbability != null) {
                             val smileProb = face.smilingProbability
-                            Toast.makeText(this,"smile",Toast.LENGTH_SHORT).show()
+                            textViewPhoto2.append("Evaluation du sourire [0.0 - 1.0] : "+ smileProb.toString()  )
+                        }
+                        if (face.rightEyeOpenProbability != null) {
+                            val rightEyeOpenProb = face.rightEyeOpenProbability
+                        }
+
+                        // If face tracking was enabled:
+                        if (face.trackingId != null) {
+                            val id = face.trackingId
+                        }
+                    }
+            }
+
+
+            val result = detector.process(photoOfMe)
+
+                .addOnSuccessListener { faces ->
+
+                //    val faceGraphic :FaceContour = FaceContourGraphic(photo2)
+
+                    for (face in faces) {
+                        val bounds = face.boundingBox
+                        val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
+                        val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
+
+                        textViewPhoto.text =""
+                        textViewPhoto.append("Emplacement : " +  bounds.toString() + "\n")
+                        textViewPhoto.append("Rotation tête horizontale X : "+ rotY.toString() + "°" + "\n" )
+                        textViewPhoto.append("Inclinaison tête axe Z : "+ rotZ.toString() + "°" + "\n" )
+
+
+
+
+                        // If landmark detection was enabled (mouth, ears, eyes, cheeks, and
+                        // nose available):
+                        val leftEar = face.getLandmark(FaceLandmark.LEFT_EAR)
+                        leftEar?.let {
+                            val leftEarPos = leftEar.position
+                        }
+
+                        // If contour detection was enabled:
+                        val leftEyeContour = face.getContour(FaceContour.LEFT_EYE)?.points
+                        val upperLipBottomContour = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points
+
+                        // If classification was enabled:
+                        if (face.smilingProbability != null) {
+                            val smileProb = face.smilingProbability
+                            textViewPhoto.append("Evaluation du sourire [0.0 - 1.0] : "+ smileProb.toString()  )
                         }
                         if (face.rightEyeOpenProbability != null) {
                             val rightEyeOpenProb = face.rightEyeOpenProbability
